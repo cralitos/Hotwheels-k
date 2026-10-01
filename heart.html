@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#03040a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Hot Wheels 💙">
+    <link rel="manifest" href="manifest.json">
+    <title>Feliz Día de los Carritos Hot Wheels mi Rey 💙</title>
+    
+   
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Quicksand:wght@400;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <style>
+        * {
+            user-select: none;
+            -webkit-user-select: none;
+            box-sizing: border-box;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            height: -webkit-fill-available;
+            overflow: hidden;
+            background-color: #03040a;
+            font-family: 'Quicksand', sans-serif;
+            color: #ffffff;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: none;
+        }
+        #canvas-container canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            touch-action: none;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .font-handwriting {
+            font-family: 'Dancing Script', cursive;
+        }
+        
+        /* Neon Effects */
+        .neon-title {
+            text-shadow: 0 0 8px #00f0ff, 0 0 18px #00f0ff, 0 0 30px #0088ff, 0 0 45px #0055ff;
+        }
+        .neon-orange-num {
+            text-shadow: 0 0 10px #ff5500, 0 0 22px #ff3300, 0 0 35px #ffaa00;
+        }
+        .neon-orange-glow {
+            box-shadow: 0 0 25px rgba(255, 85, 0, 0.7), inset 0 0 12px rgba(255, 200, 0, 0.4);
+        }
+        
+        /* Hot Wheels Badge */
+        .hw-badge {
+            background: linear-gradient(135deg, #e60012 0%, #ff8800 50%, #fcee21 100%);
+            clip-path: polygon(0% 0%, 96% 0%, 100% 50%, 96% 100%, 0% 100%, 4% 50%);
+        }
+
+        /* Glassmorphism Cards */
+        .glass-panel {
+            background: rgba(6, 11, 24, 0.92);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(0, 240, 255, 0.35);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050811;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff5500;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="relative w-full h-full bg-black overflow-hidden select-none">
+
+    <!-- 1. HOT WHEELS LOADER SCREEN (Matches Exact Image Reference) -->
+    <div id="loader-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#07070f] p-4 transition-opacity duration-1000">
+        <div class="relative w-full max-w-lg px-4 flex flex-col items-center">
+            
+            <!-- Driving Car Container above progress line -->
+            <div class="relative w-full h-24 mb-2">
+                <div id="loader-car" class="absolute bottom-0 left-0 transform -translate-x-1/2 transition-all duration-75 ease-out pointer-events-none" style="left: 0%;">
+                    <!-- High Quality Hot Wheels Blue Sports Car SVG -->
+                    <div class="relative w-36 sm:w-44 h-20 filter drop-shadow-[0_0_15px_rgba(255,100,0,0.85)]">
+                        <svg viewBox="0 0 220 90" class="w-full h-full">
+                            <defs>
+                                <linearGradient id="carBodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#0052cc" />
+                                    <stop offset="50%" stop-color="#0088ff" />
+                                    <stop offset="100%" stop-color="#0033aa" />
+                                </linearGradient>
+                                <linearGradient id="hwLogoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#e60012" />
+                                    <stop offset="50%" stop-color="#ff8800" />
+                                    <stop offset="100%" stop-color="#fcee21" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Rear Spoiler -->
+                            <path d="M 15,28 L 45,28 L 38,36 L 15,36 Z" fill="#002288"/>
+                            <path d="M 22,36 L 26,45 L 30,36 Z" fill="#001155"/>
+
+                            <!-- Car Body Chassis -->
+                            <path d="M 20,55 Q 35,32 70,28 L 100,16 Q 140,12 165,30 L 200,38 Q 212,42 210,56 L 195,60 L 20,60 Z" fill="url(#carBodyGrad)"/>
+                            <!-- Front Hood Aerodynamics -->
+                            <path d="M 140,30 L 190,40 Q 205,44 202,52 L 130,52 Z" fill="#003eaf"/>
+
+                            <!-- Windshield Glass -->
+                            <path d="M 75,28 L 98,17 Q 132,14 150,28 L 75,28 Z" fill="#00f0ff" opacity="0.85"/>
+                            <path d="M 85,26 L 102,18 L 125,18 L 115,26 Z" fill="#ffffff" opacity="0.4"/>
+
+                            <!-- Side Hot Wheels Logo Flame Graphics -->
+                            <path d="M 45,46 Q 80,40 160,46 Q 130,54 70,54 Z" fill="url(#hwLogoGrad)"/>
+                            <text x="65" y="51" font-family="Orbitron" font-size="7" font-weight="900" font-style="italic" fill="#ffffff">HOT WHEELS</text>
+
+                            <!-- Wheels with Rims -->
+                            <!-- Rear Wheel -->
+                            <circle cx="50" cy="58" r="16" fill="#0d0d0d" stroke="#ff5500" stroke-width="2.5"/>
+                            <circle cx="50" cy="58" r="10" fill="#222"/>
+                            <path d="M 50,48 L 50,68 M 40,58 L 60,58 M 43,51 L 57,65 M 43,65 L 57,51" stroke="#cccccc" stroke-width="2"/>
+                            <!-- Front Wheel -->
+                            <circle cx="165" cy="58" r="15" fill="#0d0d0d" stroke="#ff5500" stroke-width="2.5"/>
+                            <circle cx="165" cy="58" r="9" fill="#222"/>
+                            <path d="M 165,49 L 165,67 M 156,58 L 174,58 M 159,52 L 171,64 M 159,64 L 171,52" stroke="#cccccc" stroke-width="2"/>
+
+                            <!-- Headlight Glow -->
+                            <ellipse cx="205" cy="46" rx="4" ry="2" fill="#ffffff"/>
+                        </svg>
+                        <!-- Exhaust Nitro Flame -->
+                        <div class="absolute -left-4 top-10 w-6 h-3 bg-gradient-to-l from-yellow-300 via-orange-500 to-transparent rounded-full animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar Track -->
+            <div class="w-full h-3.5 bg-gray-900/90 rounded-full overflow-hidden border border-gray-700 p-0.5 shadow-[0_0_15px_rgba(0,0,0,0.8)]">
+                <div id="progress-bar" class="h-full w-0 bg-gradient-to-r from-yellow-500 via-orange-500 to-amber-500 rounded-full transition-all duration-75 shadow-[0_0_15px_#ff5500]"></div>
+            </div>
+
+            <!-- Center Percentage Text & Caption -->
+            <div class="flex flex-col items-center mt-8 space-y-1">
+                <span id="percentage-text" class="font-orbitron text-5xl sm:text-6xl font-black text-orange-500 neon-orange-num tracking-wider">
+                    0%
+                </span>
+                <span id="status-text" class="font-orbitron italic text-sm sm:text-base text-gray-300 tracking-[0.25em] font-semibold pt-2">
+                    Acelerando...ya casi mi amor
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN 3D CANVAS -->
+    <div id="canvas-container" class="absolute inset-0 z-0"></div>
+
+    <!-- 3. TOP FLOATING HEADER TITLE -->
+    <header id="main-header" class="absolute top-4 inset-x-0 z-20 pointer-events-none text-center px-4 opacity-0 transition-opacity duration-1000">
+        <div class="inline-block bg-black/50 backdrop-blur-md px-6 py-3 rounded-2xl border border-cyan-500/30 shadow-[0_0_30px_rgba(0,240,255,0.2)]">
+            <span class="hw-badge px-4 py-1 text-[10px] md:text-xs font-black italic text-black tracking-widest inline-block mb-1 transform -skew-x-12 shadow-lg">
+                EDITION SPECIAL para Mi dulce amor
+            </span>
+            <h1 class="font-orbitron text-lg sm:text-2xl md:text-3xl font-black text-cyan-300 neon-title tracking-wider">
+                Feliz Día de los Carritos Hot Wheels amor bonito💙
+            </h1>
+            <p id="sub-header" class="text-xs md:text-sm text-orange-400 font-semibold tracking-widest uppercase mt-1">
+                Toque cualquier carrito mi cielito✨
+            </p>
+        </div>
+    </header>
+
+    <!-- 4. BOTTOM ACTION & CONTROLS BAR -->
+    <footer id="main-footer" class="absolute bottom-4 inset-x-4 z-20 pointer-events-none flex flex-wrap justify-between items-center gap-2 max-w-5xl mx-auto opacity-0 transition-opacity duration-1000">
+        <div class="pointer-events-auto bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-cyan-500/30 text-xs text-cyan-300 flex items-center space-x-2">
+            <i class="fa-solid fa-arrows-spin text-orange-400 animate-spin"></i>
+            <span>Gira 360° | Zoom con rueda o gestos</span>
+        </div>
+
+        <div class="pointer-events-auto flex items-center space-x-3">
+            <button id="btn-audio" class="px-3 py-2 bg-slate-900/90 hover:bg-slate-800 text-cyan-400 border border-cyan-500/40 rounded-xl text-xs font-semibold transition-all flex items-center space-x-2 shadow-lg">
+                <i id="audio-icon" class="fa-solid fa-volume-high text-orange-400"></i>
+                <span class="hidden sm:inline">Música</span>
+            </button>
+
+            <button id="btn-reset-cam" class="px-3 py-2 bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 rounded-xl text-xs font-semibold transition-all flex items-center space-x-2 shadow-lg">
+                <i class="fa-solid fa-compress"></i>
+                <span class="hidden sm:inline">Centrar</span>
+            </button>
+
+            <button id="btn-readme" class="px-3.5 py-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-orbitron font-bold text-xs rounded-xl border border-orange-400/50 shadow-[0_0_15px_rgba(255,85,0,0.4)] transition-all flex items-center space-x-2 active:scale-95">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>README</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- 5. INTERACTIVE COLLECTOR CARD MODAL -->
+    <div id="card-modal" class="fixed inset-0 z-40 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div id="card-box" class="relative w-full max-w-sm sm:max-w-md glass-panel rounded-3xl p-6 border-2 border-orange-500 neon-orange-glow transform scale-90 transition-transform duration-300">
+            <button id="btn-close-card" class="absolute top-4 right-4 text-gray-400 hover:text-white bg-slate-800/80 p-2 rounded-full w-8 h-8 flex items-center justify-center border border-gray-700 transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center justify-between mb-4 border-b border-orange-500/30 pb-3">
+                <span id="modal-tag" class="hw-badge px-3 py-1 text-xs font-black text-black transform -skew-x-12 tracking-wider">
+                    HOT WHEELS V.SPECIAL-FOR-YOU
+                </span>
+                <span id="modal-code" class="font-orbitron text-xs text-cyan-400 font-bold">HW-2026-GALAXIA-DEL-AMOR</span>
+            </div>
+
+            <!-- Car Card Image Preview -->
+            <div id="modal-car-bg" class="w-full h-36 rounded-2xl bg-gradient-to-br from-blue-950 via-slate-900 to-orange-950 border border-cyan-400/40 p-4 mb-5 flex items-center justify-center relative overflow-hidden group">
+                <div class="absolute inset-0 bg-[radial-gradient(circle,_rgba(0,240,255,0.2)_0%,_transparent_75%)] animate-pulse"></div>
+                <div id="modal-car-svg" class="w-48 h-auto filter drop-shadow-[0_0_15px_rgba(255,136,0,0.9)] transform group-hover:scale-105 transition-transform duration-300">
+                </div>
+            </div>
+
+            <!-- Dedicated Message -->
+            <div class="text-center">
+                <h3 id="modal-car-name" class="font-orbitron text-lg sm:text-xl font-bold text-cyan-300 neon-title mb-3">
+                    Twin Mill - Amor Infinito
+                </h3>
+                <div class="bg-black/50 p-4 rounded-xl border border-cyan-500/30 mb-5">
+                    <p id="modal-car-msg" class="text-sm sm:text-base text-slate-100 font-medium italic leading-relaxed">
+                        "Eres el motor que impulsa cada uno de mis días."
+                    </p>
+                </div>
+
+                <button id="btn-confirm-card" class="w-full py-3 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-orbitron font-bold text-xs sm:text-sm rounded-xl border border-cyan-300/50 shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all transform active:scale-95">
+                    Seguir explorando la galaxia de mi amor por usted🏎️✨
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. FOTO MODAL (reemplaza README) -->
+    <div id="readme-modal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex items-center justify-center p-3 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="relative w-full h-full max-w-2xl max-h-[92vh] flex flex-col items-center justify-center">
+            <button id="btn-close-readme" class="absolute top-0 right-0 z-10 text-gray-300 hover:text-white bg-black/70 p-2 rounded-full w-10 h-10 flex items-center justify-center border border-cyan-500/40 transition-colors shadow-lg">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-full h-full flex items-center justify-center overflow-hidden rounded-2xl border-2 border-orange-500/60 shadow-[0_0_40px_rgba(255,85,0,0.4)]">
+                <img
+                    src="multimedia/Foto.jpg"
+                    alt="Foto especial"
+                    style="max-width:100%; max-height:85vh; width:auto; height:auto; object-fit:contain; display:block; border-radius:1rem;"
+                />
+            </div>
+            <button id="btn-close-readme-bottom" class="mt-4 px-6 py-2.5 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white font-orbitron font-bold text-xs rounded-xl shadow-lg transition-all active:scale-95">
+                Volver a la Galaxia 🏎️✨
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA: HOT WHEELS CAR MESSAGES & FLOATING QUOTES ---
+        const CAR_MESSAGES = [
+            { name: "Twin Mill - Amor Infinito", quote: "Contigo la carretera es mejor...", msg: "Eres el motor que impulsa cada uno de mis días. ¡Te quiero muchísimo!", color: "#e60012" },
+            { name: "Bone Shaker - Contigo Siempre", quote: "Acelerando hacia lo que viene...", msg: "A toda velocidad hacia un futuro increíble juntos.", color: "#00f0ff" },
+            { name: "Rodger Dodger - Mi Lugar Favorito", quote: "Contigo todo lugar es bonito...", msg: "Mi lugar favorito en todo el universo siempre es a tu lado.", color: "#fcee21" },
+            { name: "Custom '67 Mustang", quote: "Eres pura energía...", msg: "Contigo la carrera de la vida es mil veces más hermosa.", color: "#d946ef" },
+            { name: "Deora II - Pura Energía", quote: "A toda velocidad...", msg: "Tu sonrisa ilumina mi mundo más que todas las estrellas.", color: "#22c55e" },
+            { name: "Night Shifter - Mi Complemento", quote: "Un día más a tu lado...", msg: "Un día más a tu lado es el mejor regalo de todos.", color: "#ff8800" },
+            { name: "Mach Speeder - Rayo de Luz", quote: "Gracias por estar ahí...", msg: "Gracias por llenar mi vida de aventuras, risas y emoción.", color: "#3b82f6" },
+            { name: "Sharkruiser - Inigualable", quote: "Eres mi persona favorita...", msg: "Avanzamos juntos sin importar las curvas del camino.", color: "#ec4899" }
+        ];
+
+        // --- THREE.JS SCENE VARIABLES ---
+        let scene, camera, renderer, controls;
+        let galaxyParticles, galaxyGeometry;
+        let heartParticles, heartGeometry;
+        let carsGroup;
+        let raycaster, mouse;
+
+        const IS_MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth < 768;
+        const GALAXY_COUNT = IS_MOBILE ? 4000 : 14000;
+        const HEART_COUNT  = IS_MOBILE ? 1200 : 3800;
+        const CARS_COUNT   = IS_MOBILE ? 10   : 22;
+
+        let galaxyProgress = { scale: 0.001, alpha: 0 };
+        let heartProgress = { scale: 0.001, yOffset: -8, alpha: 0 };
+        let interactiveCars = [];
+
+        let audioCtx = null;
+        let isAudioPlaying = false;
+        let reflexivasAudio = null;
+        let loveAudio = null;
+        let audioStarted = false;
+
+        // --- SVG CAR DRAWING UTILITY ---
+        function createCarSVG(colorHex = "#e60012") {
+            return `
+            <svg viewBox="0 0 160 65" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                <!-- Rear Wing -->
+                <path d="M 12,20 L 32,20 L 26,26 L 12,26 Z" fill="#ffffff" opacity="0.9"/>
+                <!-- Car Body -->
+                <path d="M 15,40 Q 28,22 50,18 L 72,10 Q 100,8 118,22 L 145,28 Q 155,32 150,42 L 140,44 L 15,44 Z" fill="${colorHex}"/>
+                <!-- Windshield -->
+                <path d="M 55,18 L 72,12 Q 95,10 110,20 L 55,20 Z" fill="#00f0ff" opacity="0.85"/>
+                <!-- Hot Wheels Side Stripe -->
+                <path d="M 10,35 Q 50,33 145,35" stroke="#fcee21" stroke-width="3" stroke-dasharray="6,2" fill="none"/>
+                <!-- Wheels -->
+                <circle cx="38" cy="44" r="10" fill="#111" stroke="#ff5500" stroke-width="2"/>
+                <circle cx="38" cy="44" r="4" fill="#fff"/>
+                <circle cx="118" cy="44" r="10" fill="#111" stroke="#ff5500" stroke-width="2"/>
+                <circle cx="118" cy="44" r="4" fill="#fff"/>
+            </svg>`;
+        }
+
+        // --- STEP 1: LOADER SEQUENCE ---
+        function runLoaderSequence() {
+            let progress = 0;
+            const progressBar = document.getElementById('progress-bar');
+            const loaderCar = document.getElementById('loader-car');
+            const percentageText = document.getElementById('percentage-text');
+            const statusText = document.getElementById('status-text');
+            const loaderScreen = document.getElementById('loader-screen');
+            const mainHeader = document.getElementById('main-header');
+            const mainFooter = document.getElementById('main-footer');
+
+            // Arrancar audios con el primer click/touch del usuario (política del navegador)
+            const startOnInteraction = () => {
+                startAudioSequence();
+                document.removeEventListener('click', startOnInteraction);
+                document.removeEventListener('touchstart', startOnInteraction);
+            };
+            document.addEventListener('click', startOnInteraction);
+            document.addEventListener('touchstart', startOnInteraction);
+
+            const loaderInterval = setInterval(() => {
+                progress += Math.floor(Math.random() * 2) + 1;
+                if (progress > 100) progress = 100;
+
+                progressBar.style.width = `${progress}%`;
+                loaderCar.style.left = `${progress}%`;
+                percentageText.innerText = `${progress}%`;
+
+                if (progress > 35 && progress < 75) {
+                    statusText.innerText = "Encendiendo Galaxia...";
+                } else if (progress >= 75 && progress < 100) {
+                    statusText.innerText = "Lanzando Carritos Hot Wheels...";
+                }
+
+                if (progress >= 100) {
+                    clearInterval(loaderInterval);
+                    statusText.innerText = "¡Despegue Galáctico!";
+
+                    setTimeout(() => {
+                        loaderScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            loaderScreen.style.display = 'none';
+                            mainHeader.style.opacity = '1';
+                            mainFooter.style.opacity = '1';
+                            
+                            // START ANIMATION SEQUENCES
+                            birthGalaxyAnimation();
+                        }, 900);
+                    }, 400);
+                }
+            }, 35);
+        }
+
+        // --- INITIALIZE THREE.JS SCENE ---
+        function init3DScene() {
+            const container = document.getElementById('canvas-container');
+
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x03040a, 0.001);
+
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 30, 70);
+
+            try {
+                renderer = new THREE.WebGLRenderer({ antialias: !IS_MOBILE, alpha: true, powerPreference: 'high-performance' });
+            } catch(e) {
+                renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+            }
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, IS_MOBILE ? 1.5 : 2));
+            container.appendChild(renderer.domElement);
+
+            // Orbit Controls 360 Rotation
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxDistance = 160;
+            controls.minDistance = 12;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = IS_MOBILE ? 0.4 : 0.6;
+            controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            createGalaxyParticles();
+            createHeartParticles();
+            createFloatingSpaceCars();
+            createDeepStarfield();
+
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('pointerdown', onPointerDown);
+            // Touch support explícito para móvil
+            renderer.domElement.addEventListener('touchstart', onTouchStart, { passive: false });
+            renderer.domElement.addEventListener('touchend', onTouchEnd, { passive: false });
+        }
+
+        // --- 1. SPIRAL GALAXY PARTICLES ---
+        function createGalaxyParticles() {
+            galaxyGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(GALAXY_COUNT * 3);
+            const colors = new Float32Array(GALAXY_COUNT * 3);
+
+            const colorCore = new THREE.Color(0xffffff);
+            const colorInner = new THREE.Color(0x00f0ff);
+            const colorOuter = new THREE.Color(0x0033ff);
+
+            for (let i = 0; i < GALAXY_COUNT; i++) {
+                const branches = 4;
+                const radius = Math.pow(Math.random(), 2) * 58 + 0.5;
+                const spinAngle = radius * 0.32;
+                const branchAngle = ((i % branches) / branches) * Math.PI * 2;
+
+                const randomX = (Math.random() - 0.5) * (60 - radius) * 0.07;
+                const randomY = (Math.random() - 0.5) * (60 - radius) * 0.04;
+                const randomZ = (Math.random() - 0.5) * (60 - radius) * 0.07;
+
+                positions[i * 3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+                positions[i * 3 + 1] = randomY;
+                positions[i * 3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+
+                const mixedColor = colorCore.clone();
+                if (radius < 10) {
+                    mixedColor.lerp(colorInner, radius / 10);
+                } else {
+                    mixedColor.copy(colorInner).lerp(colorOuter, (radius - 10) / 48);
+                }
+
+                colors[i * 3] = mixedColor.r;
+                colors[i * 3 + 1] = mixedColor.g;
+                colors[i * 3 + 2] = mixedColor.b;
+            }
+
+            galaxyGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            galaxyGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const pTexture = createGlowTexture('#00f0ff');
+
+            const galaxyMaterial = new THREE.PointsMaterial({
+                size: 0.65,
+                vertexColors: true,
+                map: pTexture,
+                transparent: true,
+                opacity: 0,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            galaxyParticles = new THREE.Points(galaxyGeometry, galaxyMaterial);
+            galaxyParticles.scale.set(0.001, 0.001, 0.001);
+            scene.add(galaxyParticles);
+        }
+
+        // --- 2. PARAMETRIC 3D HEART PARTICLES ---
+        function createHeartParticles() {
+            heartGeometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(HEART_COUNT * 3);
+            const colors = new Float32Array(HEART_COUNT * 3);
+
+            const colorGold = new THREE.Color(0xffbb00);
+            const colorPink = new THREE.Color(0xff0077);
+            const colorCyan = new THREE.Color(0x00ffff);
+
+            for (let i = 0; i < HEART_COUNT; i++) {
+                const t = Math.PI * (2 * Math.random() - 1);
+                const u = Math.PI * (Math.random() - 0.5);
+
+                let x = 16 * Math.pow(Math.sin(t), 3);
+                let y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+                let z = u * 7 * Math.sin(t);
+
+                x += (Math.random() - 0.5) * 1.2;
+                y += (Math.random() - 0.5) * 1.2;
+                z += (Math.random() - 0.5) * 1.2;
+
+                const scaleFactor = 0.75;
+                positions[i * 3] = x * scaleFactor;
+                positions[i * 3 + 1] = y * scaleFactor;
+                positions[i * 3 + 2] = z * scaleFactor;
+
+                const pColor = Math.random() > 0.4 ? colorCyan : colorGold.clone().lerp(colorPink, Math.random());
+                colors[i * 3] = pColor.r;
+                colors[i * 3 + 1] = pColor.g;
+                colors[i * 3 + 2] = pColor.b;
+            }
+
+            heartGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            heartGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const hTexture = createGlowTexture('#ffffff');
+
+            const heartMaterial = new THREE.PointsMaterial({
+                size: 0.8,
+                vertexColors: true,
+                map: hTexture,
+                transparent: true,
+                opacity: 0,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            heartParticles = new THREE.Points(heartGeometry, heartMaterial);
+            heartParticles.position.set(0, -8, 0);
+            heartParticles.scale.set(0.001, 0.001, 0.001);
+            scene.add(heartParticles);
+        }
+
+        // --- 3. FLOATING CARS IN GALAXY WITH QUOTE LABELS ---
+        function createFloatingSpaceCars() {
+            carsGroup = new THREE.Group();
+            scene.add(carsGroup);
+
+            for (let i = 0; i < CARS_COUNT; i++) {
+                const carData = CAR_MESSAGES[i % CAR_MESSAGES.length];
+                const carSprite = createSpaceCarSprite(carData);
+
+                const radius = 20 + Math.random() * 30;
+                const angle = (i / CARS_COUNT) * Math.PI * 2 + (Math.random() * 0.3);
+                const height = (Math.random() - 0.5) * 16;
+
+                carSprite.position.set(
+                    Math.cos(angle) * radius,
+                    height,
+                    Math.sin(angle) * radius
+                );
+
+                carSprite.userData = {
+                    carData: carData,
+                    initialY: height,
+                    floatSpeed: 1 + Math.random() * 1.4,
+                    floatOffset: Math.random() * Math.PI * 2,
+                    orbitRadius: radius,
+                    orbitAngle: angle,
+                    orbitSpeed: 0.0015 + Math.random() * 0.002
+                };
+
+                carSprite.scale.set(0, 0, 0);
+                carsGroup.add(carSprite);
+                interactiveCars.push(carSprite);
+            }
+        }
+
+        // Generate 3D Sprite with Hot Wheels Vehicle & Floating Quote Label
+        function createSpaceCarSprite(carData) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 320;
+            canvas.height = 140;
+            const ctx = canvas.getContext('2d');
+
+            // Floating Quote Badge
+            ctx.fillStyle = 'rgba(4, 9, 20, 0.75)';
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.6)';
+            ctx.lineWidth = 2;
+            
+            ctx.beginPath();
+            ctx.roundRect(10, 10, 300, 38, 12);
+            ctx.fill();
+            ctx.stroke();
+
+            // Quote Text in Handwriting/Script
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 16px "Dancing Script", cursive, sans-serif';
+            ctx.fillText(`"${carData.quote}"`, 24, 34);
+
+            // Draw Car SVG Graphic directly on canvas below quote
+            const img = new Image();
+            const carSvgStr = createCarSVG(carData.color);
+            img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(carSvgStr);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            img.onload = () => {
+                ctx.drawImage(img, 40, 52, 240, 80);
+                texture.needsUpdate = true;
+            };
+
+            const spriteMaterial = new THREE.SpriteMaterial({
+                map: texture,
+                transparent: true,
+                depthTest: true
+            });
+
+            const sprite = new THREE.Sprite(spriteMaterial);
+            sprite.scale.set(12, 5.2, 1);
+            return sprite;
+        }
+
+        function createGlowTexture(colorStr) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+            grad.addColorStop(0, 'rgba(255,255,255,1)');
+            grad.addColorStop(0.35, colorStr);
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 32, 32);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function createDeepStarfield() {
+            const starsGeo = new THREE.BufferGeometry();
+            const count = 3500;
+            const pos = new Float32Array(count * 3);
+            for (let i = 0; i < count * 3; i++) {
+                pos[i] = (Math.random() - 0.5) * 450;
+            }
+            starsGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.3, transparent: true, opacity: 0.7 });
+            scene.add(new THREE.Points(starsGeo, starsMat));
+        }
+
+        // --- ANIMATION TIMELINE SEQUENCES ---
+        function birthGalaxyAnimation() {
+            gsap.to(galaxyProgress, {
+                scale: 1,
+                alpha: 0.95,
+                duration: 3.2,
+                ease: "power2.out",
+                onUpdate: () => {
+                    galaxyParticles.scale.set(galaxyProgress.scale, galaxyProgress.scale, galaxyProgress.scale);
+                    galaxyParticles.material.opacity = galaxyProgress.alpha;
+                },
+                onComplete: () => {
+                    birthHeartAnimation();
+                }
+            });
+        }
+
+        function birthHeartAnimation() {
+            document.getElementById('sub-header').innerText = "✨ Naciendo el Corazón Galáctico Hot Wheels ✨";
+
+            gsap.to(heartProgress, {
+                scale: 1.15,
+                yOffset: 5,
+                alpha: 1,
+                duration: 2.8,
+                ease: "back.out(1.2)",
+                onUpdate: () => {
+                    heartParticles.scale.set(heartProgress.scale, heartProgress.scale, heartProgress.scale);
+                    heartParticles.position.y = heartProgress.yOffset;
+                    heartParticles.material.opacity = heartProgress.alpha;
+                },
+                onComplete: () => {
+                    spawnCarsAnimation();
+                }
+            });
+        }
+
+        function spawnCarsAnimation() {
+            document.getElementById('sub-header').innerText = "🏎️ Toca cualquier carrito para abrir su mensaje dedicado 💙";
+
+            interactiveCars.forEach((car, index) => {
+                gsap.to(car.scale, {
+                    x: 12,
+                    y: 5.2,
+                    z: 1,
+                    duration: 1.2,
+                    delay: index * 0.07,
+                    ease: "elastic.out(1, 0.5)"
+                });
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now() * 0.001;
+
+            if (galaxyParticles) {
+                galaxyParticles.rotation.y += 0.0018;
+            }
+
+            if (heartParticles && heartProgress.alpha > 0) {
+                heartParticles.rotation.y += 0.004;
+                const pulse = 1.15 + Math.sin(time * 3) * 0.06;
+                heartParticles.scale.set(pulse, pulse, pulse);
+            }
+
+            // Orbit & Float cars through space
+            if (interactiveCars.length > 0) {
+                interactiveCars.forEach((car) => {
+                    const data = car.userData;
+                    data.orbitAngle += data.orbitSpeed;
+                    car.position.x = Math.cos(data.orbitAngle) * data.orbitRadius;
+                    car.position.z = Math.sin(data.orbitAngle) * data.orbitRadius;
+                    car.position.y = data.initialY + Math.sin(time * data.floatSpeed + data.floatOffset) * 1.8;
+                });
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        let touchStartPos = null;
+        function onTouchStart(e) {
+            if (e.touches.length === 1) {
+                touchStartPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+        }
+        function onTouchEnd(e) {
+            if (!touchStartPos || e.changedTouches.length !== 1) return;
+            const dx = Math.abs(e.changedTouches[0].clientX - touchStartPos.x);
+            const dy = Math.abs(e.changedTouches[0].clientY - touchStartPos.y);
+            // Solo si fue tap (no arrastre)
+            if (dx < 10 && dy < 10) {
+                const cx = e.changedTouches[0].clientX;
+                const cy = e.changedTouches[0].clientY;
+                mouse.x = (cx / window.innerWidth) * 2 - 1;
+                mouse.y = -(cy / window.innerHeight) * 2 + 1;
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(interactiveCars);
+                if (intersects.length > 0) openCardModal(intersects[0].object.userData.carData);
+            }
+            touchStartPos = null;
+        }
+
+        function onPointerDown(event) {
+            if (event.pointerType === 'touch') return; // manejado por touch events
+            if (event.target.tagName === 'BUTTON' || event.target.closest('#card-modal') || event.target.closest('#readme-modal')) return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(interactiveCars);
+            if (intersects.length > 0) openCardModal(intersects[0].object.userData.carData);
+        }
+
+        function openCardModal(carData) {
+            const modal = document.getElementById('card-modal');
+            const box = document.getElementById('card-box');
+            
+            document.getElementById('modal-car-name').innerText = carData.name;
+            document.getElementById('modal-car-msg').innerText = `"${carData.msg}"`;
+            document.getElementById('modal-car-svg').innerHTML = createCarSVG(carData.color);
+
+            modal.style.opacity = '1';
+            modal.style.pointerEvents = 'auto';
+            box.style.transform = 'scale(1)';
+
+            playEngineSound();
+        }
+
+        function closeCardModal() {
+            const modal = document.getElementById('card-modal');
+            const box = document.getElementById('card-box');
+            
+            modal.style.opacity = '0';
+            modal.style.pointerEvents = 'none';
+            box.style.transform = 'scale(0.9)';
+        }
+
+        // --- MOTOR SOUND (Web Audio API) ---
+        function playEngineRevSound() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                // Capa 1: rugido grave del motor
+                const osc1 = audioCtx.createOscillator();
+                const gain1 = audioCtx.createGain();
+                osc1.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(80, audioCtx.currentTime);
+                osc1.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.6);
+                osc1.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 1.2);
+                gain1.gain.setValueAtTime(0.0, audioCtx.currentTime);
+                gain1.gain.linearRampToValueAtTime(0.12, audioCtx.currentTime + 0.1);
+                gain1.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 1.0);
+                gain1.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 1.4);
+                osc1.connect(gain1); gain1.connect(audioCtx.destination);
+                osc1.start(); osc1.stop(audioCtx.currentTime + 1.4);
+
+                // Capa 2: aceleración aguda
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.type = 'square';
+                osc2.frequency.setValueAtTime(160, audioCtx.currentTime + 0.1);
+                osc2.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.7);
+                osc2.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 1.3);
+                gain2.gain.setValueAtTime(0.0, audioCtx.currentTime + 0.1);
+                gain2.gain.linearRampToValueAtTime(0.06, audioCtx.currentTime + 0.3);
+                gain2.gain.linearRampToValueAtTime(0.0, audioCtx.currentTime + 1.4);
+                osc2.connect(gain2); gain2.connect(audioCtx.destination);
+                osc2.start(audioCtx.currentTime + 0.1); osc2.stop(audioCtx.currentTime + 1.4);
+
+            } catch (e) { console.log('Engine sound error:', e); }
+        }
+
+        // Sonido corto al hacer click en carrito
+        function playEngineSound() {
+            if (!isAudioPlaying) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(140, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(580, audioCtx.currentTime + 0.35);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
+            } catch (e) { console.log('Audio error:', e); }
+        }
+
+        // --- INICIAR SECUENCIA DE AUDIOS ---
+        function startAudioSequence() {
+            if (audioStarted) return;
+            audioStarted = true;
+            isAudioPlaying = true;
+            const icon = document.getElementById('audio-icon');
+            icon.className = 'fa-solid fa-volume-high text-orange-400';
+
+            // 1. Sonido de motor al arrancar
+            playEngineRevSound();
+
+            // 2. Love on my brain de fondo (volumen bajo)
+            loveAudio = new Audio('multimedia/esetipo.mp3');
+            loveAudio.loop = true;
+            loveAudio.volume = 0.15;
+            loveAudio.play().catch(() => {});
+
+            // 3. Palabras reflexivas encima (volumen alto)
+            reflexivasAudio = new Audio('multimedia/palbras reflexibas.mp3');
+            reflexivasAudio.volume = 0.95;
+            reflexivasAudio.play().catch(() => {});
+
+            // 4. Cuando terminen las reflexivas, subir volumen de love
+            reflexivasAudio.addEventListener('ended', () => {
+                if (!loveAudio) return;
+                // Fade in gradual de 0.15 a 0.85 en 3 segundos
+                let vol = 0.15;
+                const fadeIn = setInterval(() => {
+                    vol = Math.min(vol + 0.02, 0.85);
+                    loveAudio.volume = vol;
+                    if (vol >= 0.85) clearInterval(fadeIn);
+                }, 100);
+            });
+        }
+
+        function toggleAudio() {
+            const icon = document.getElementById('audio-icon');
+            isAudioPlaying = !isAudioPlaying;
+
+            if (isAudioPlaying) {
+                icon.className = 'fa-solid fa-volume-high text-orange-400';
+                if (loveAudio) loveAudio.play().catch(() => {});
+                if (reflexivasAudio && !reflexivasAudio.ended) reflexivasAudio.play().catch(() => {});
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark';
+                if (loveAudio) loveAudio.pause();
+                if (reflexivasAudio) reflexivasAudio.pause();
+            }
+        }
+
+        function onWindowResize() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        }
+
+        function setupUIEvents() {
+            document.getElementById('btn-close-card').addEventListener('click', closeCardModal);
+            document.getElementById('btn-confirm-card').addEventListener('click', closeCardModal);
+
+            const readmeModal = document.getElementById('readme-modal');
+            const openReadme = () => { readmeModal.style.opacity = '1'; readmeModal.style.pointerEvents = 'auto'; };
+            const closeReadme = () => { readmeModal.style.opacity = '0'; readmeModal.style.pointerEvents = 'none'; };
+
+            document.getElementById('btn-readme').addEventListener('click', openReadme);
+            document.getElementById('btn-close-readme').addEventListener('click', closeReadme);
+            document.getElementById('btn-close-readme-bottom').addEventListener('click', closeReadme);
+
+            document.getElementById('btn-reset-cam').addEventListener('click', () => {
+                gsap.to(camera.position, { x: 0, y: 30, z: 70, duration: 1.5, ease: "power2.inOut" });
+            });
+
+            document.getElementById('btn-audio').addEventListener('click', toggleAudio);
+        }
+
+        window.onload = function() {
+            init3DScene();
+            animate();
+            setupUIEvents();
+            runLoaderSequence();
+        };
+    </script>
+</body>
+</html>

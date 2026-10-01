@@ -1,0 +1,24 @@
+{
+  "name": "Hot Wheels Galaxy 💙",
+  "short_name": "Hot Wheels",
+  "description": "Galaxia interactiva de Hot Wheels",
+  "start_url": "./heart.html",
+  "display": "standalone",
+  "background_color": "#03040a",
+  "theme_color": "#03040a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "multimedia/Foto.jpeg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "multimedia/Foto.jpeg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
